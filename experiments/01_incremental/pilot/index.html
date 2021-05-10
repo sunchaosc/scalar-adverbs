@@ -70,7 +70,7 @@
 		2 cents for correctly guessing only on the third try. <br>
 		</p> -->
 		<p>Note: sometimes it will be impossible to determine which object the description is referring to until the second or third try and you will have to make a random guess. </p>
-        <p>Let's start with some practice.</p>
+        <p>Let's start with some practice. <br> During the practice, you will receive feedbacks on whether you click on the correct object in your last try. </p>
 		<button onclick="_s.button()">Continue</button>
 		<!-- <p><small>*We reserve the right to withhold the bonus for participants who randomly click through the experiment. If you faithfully complete this HIT, you will get a bonus of at least $1.75!</small></p> -->
         <div style="display:none;">
@@ -108,8 +108,11 @@
             <div class="loc5"></div>
 		</div>
         
+        
         <br><br>
         <p><i>Which object is it referring to?</i></p>
+        <div class="err" style="color:blue">Incorrect.<br><br> Please click on one of the objects to continue.</div>
+        <div class="correct" style="color:blue">Correct.<br><br> Please click on one of the objects to continue.</div> 
         
 		<!-- <button onclick="_s.button()">Continue</button> -->
   </div>
@@ -133,14 +136,14 @@
 		</div>
 				   
     	<!-- <button onclick="_s.button()">Continue</button> -->
-    	<!-- <div class="err">Please adjust the slider before continuing.</div> -->
+
   	</div>
 
 
 	<div class="slide"  id="subj_info">
 	    <div class="long_form">
 	      <div class="subj_info_title">Additional information</div>
-	      <p class="info">Please answer the following questions is optional.</p>
+	      <p class="info">Please answer the following questions.</p>
 	      <p>Did you read the instructions and do you think you did the HIT correctly?</p>
 	      <label><input type="radio"  name="assess" value="No"/>No</label>
 	      <label><input type="radio"  name="assess" value="Yes"/>Yes</label>
