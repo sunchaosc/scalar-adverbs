@@ -60,7 +60,6 @@ function make_slides(f) {
         $(".correct").hide();
         e.preventDefault();
         var loc = $(this).data().loc 
-        console.log(exp.counter)
     
           if (exp.counter==3){
             if (loc === correctAns) {

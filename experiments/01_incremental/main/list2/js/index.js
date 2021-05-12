@@ -20,6 +20,7 @@ function make_slides(f) {
     start: function(){
       exp.counter = 0;
       $(".err").hide();
+      $(".correct").hide();
     },
     present: exp.practice,
     present_handle : function(stim) {
@@ -27,8 +28,11 @@ function make_slides(f) {
       exp.selection_array=[];
       this.stim = stim; 
       $(".err").hide();
+      $(".correct").hide();
       $(".grid-container").show();
-
+    
+      var correctAns = this.stim.correctAns;
+        console.log(correctAns)
       var instruction = this.stim.instruction1;
       words = instruction.split("|")
       init_instruction = words[0] + " ..."; // The|
@@ -53,24 +57,33 @@ function make_slides(f) {
 
       $(".loc").bind("click",function(e){
         $(".err").hide();
+        $(".correct").hide();
         e.preventDefault();
-        var loc = $(this).data().loc
-        if (["AOI5","AOI6"].includes(loc)) {
-          $(".err").show();
-        }
-        else {
-          if (exp.counter>2){
+        var loc = $(this).data().loc 
+    
+          if (exp.counter==3){
+            if (loc === correctAns) {
+            $(".correct").show();
+            exp.counter++;
+            }
+            else {
+            $(".err").show();
+            exp.counter++;
+            }
+          }
+          else if (exp.counter>3){
             exp.selection_array.push(loc)
             exp.counter = 0;
             $(".loc").unbind('click')
-            _s.button();
-          } else {
+            _s.button();  
+          }
+         else {
             exp.selection_array.push(loc)
             $(".sentence").html(instruction_array[exp.counter])
             exp.counter++;
-          }
-        }  
-       });
+            }
+         }
+       );
     },
 
     button : function() {
