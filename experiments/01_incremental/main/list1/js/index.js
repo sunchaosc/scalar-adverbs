@@ -20,26 +20,30 @@ function make_slides(f) {
     start: function(){
       exp.counter = 0;
       $(".err").hide();
+      $(".correct").hide();
     },
     present: exp.practice,
     present_handle : function(stim) {
-      
+
       exp.selection_array=[];
-      this.stim = stim; 
+      this.stim = stim;
       $(".err").hide();
+      $(".correct").hide();
       $(".grid-container").show();
 
+      var correctAns = this.stim.correctAns;
+        console.log(correctAns)
       var instruction = this.stim.instruction1;
       words = instruction.split("|")
       init_instruction = words[0] + " ..."; // The|
       instruction1 = words[0]+ " " + words[1] + " ..."; // The| arrow|
-      instruction2 = words[0]+ " " + words[1] + " " + words[2]  + " ...";  // The| arrow| usually lands on| or The| arrow| has a 25% chance of landing on| 
+      instruction2 = words[0]+ " " + words[1] + " " + words[2]  + " ...";  // The| arrow| usually lands on| or The| arrow| has a 25% chance of landing on|
       instruction3 = words[0]+ " " + words[1] + " " + words[2] + " " + words[3];
-        
+
       const instruction_array=[instruction1,instruction2,instruction3]
 
       $(".sentence").html(init_instruction);
-  
+
       var loc1_img = '<img src="images/'+this.stim.location1+'.png" style="height:150px" class="left">';
       $(".loc1").html(loc1_img);
       var loc2_img = '<img src="images/'+this.stim.location2+'.png" style="height:150px" class="center">';
@@ -53,24 +57,33 @@ function make_slides(f) {
 
       $(".loc").bind("click",function(e){
         $(".err").hide();
+        $(".correct").hide();
         e.preventDefault();
         var loc = $(this).data().loc
-        if (["AOI5","AOI6"].includes(loc)) {
-          $(".err").show();
-        }
-        else {
-          if (exp.counter>2){
+
+          if (exp.counter==3){
+            if (loc === correctAns) {
+            $(".correct").show();
+            exp.counter++;
+            }
+            else {
+            $(".err").show();
+            exp.counter++;
+            }
+          }
+          else if (exp.counter>3){
             exp.selection_array.push(loc)
             exp.counter = 0;
             $(".loc").unbind('click')
             _s.button();
-          } else {
+          }
+         else {
             exp.selection_array.push(loc)
             $(".sentence").html(instruction_array[exp.counter])
             exp.counter++;
-          }
-        }  
-       });
+            }
+         }
+       );
     },
 
     button : function() {
@@ -79,25 +92,25 @@ function make_slides(f) {
       _stream.apply(this); /* use _stream.apply(this); if and only if there is
       "present" data. (and only *after* responses are logged) */
     },
-    
+
     log_responses : function() {
       exp.data_trials.push({
           "displayID" : this.stim.displayID,
-          "ExpFiller" : this.stim.ExpFiller, 
+          "ExpFiller" : this.stim.ExpFiller,
           "location1" : this.stim.location1,
           "location2" : this.stim.location2,
-          "location3" : this.stim.location3, 
-          "location4" : this.stim.location4, 
+          "location3" : this.stim.location3,
+          "location4" : this.stim.location4,
           "condition" : this.stim.condition,
           "target" : this.stim.target,
           "competitor" : this.stim.competitor,
           "modal" : this.stim.modal,
           "instruction1" : this.stim.instruction1,
           "correctAns"  : this.stim.correctAns,
-          "response" : exp.selection_array, 
+          "response" : exp.selection_array,
         });
       }
-  
+
   });
 
   slides.afterpractice = slide({
@@ -122,21 +135,21 @@ function make_slides(f) {
 
       $(".err").hide();
       $(".grid-container").show();
-    
+
       this.stim = stim; // store this information in the slide so you can record it later
 
       var instruction = stim.instruction3;
       words = instruction.split("|")
       init_instruction = words[0] + " ..."; // The
       instruction1 = words[0]+ " " + words[1] + " ..."; // The| arrow|
-      instruction2 = words[0]+ " " + words[1] + " " + words[2]  + " ...";  // The| arrow| usually lands on| or The| arrow| has a 25% chance of landing on| 
+      instruction2 = words[0]+ " " + words[1] + " " + words[2]  + " ...";  // The| arrow| usually lands on| or The| arrow| has a 25% chance of landing on|
       instruction3 = words[0]+ " " + words[1] + " " + words[2] + " " + words[3];
-        
+
       const instruction_array=[instruction1,instruction2,instruction3]
 
 
       $(".instruction").html(init_instruction);
-  
+
       var loc1_img = '<img src="images/'+stim.location1+'.png"style="height:150px" class="left">';
       $(".loc1").html(loc1_img);
       var loc2_img = '<img src="images/'+stim.location2+'.png" style="height:150px" class="center">';
@@ -148,7 +161,7 @@ function make_slides(f) {
       var loc5_img = '<img src="images/loc5.png" style="height:50px" class="center">';
       $(".loc5").html(loc5_img);
 
-      
+
       $(".loc").bind("click",function(e){
         e.preventDefault();
         if (exp.counter>2){
@@ -175,23 +188,22 @@ function make_slides(f) {
       this.log_responses();
       _stream.apply(this); /* use _stream.apply(this); if and only if there is
       "present" data. (and only *after* responses are logged) */
-      
+
     },
     log_responses : function() {
     exp.data_trials.push({
         "displayID" : this.stim.displayID,
         "location1" : this.stim.location1,
         "location2" : this.stim.location2,
-        "location3" : this.stim.location3, 
-        "location4" : this.stim.location4, 
-        "target" : this.stim.target, 
-        "competitor" : this.stim.competitor, 
-        "condition" : this.stim.condition, 
-        "modal" : this.stim.modal, 
-        "size" : this.stim.size, 
-        "ExpFiller" : this.stim.ExpFiller, 
-        "correctAns" : this.stim.correctAns, 
-        "list" : this.stim.list, 
+        "location3" : this.stim.location3,
+        "location4" : this.stim.location4,
+        "target" : this.stim.target,
+        "competitor" : this.stim.competitor,
+        "condition" : this.stim.condition,
+        "modal" : this.stim.modal,
+        "ExpFiller" : this.stim.ExpFiller,
+        "correctAns" : this.stim.correctAns,
+        "list" : this.stim.list,
         "instruction3" : this.stim.instruction3,
         "response_times" : exp.time_array,
         "response" : exp.selection_array,
@@ -204,14 +216,13 @@ function make_slides(f) {
     name : "subj_info",
     submit : function(e){
       exp.subj_data = {
-        language : $("#language").val(),
-        enjoyment : $("#enjoyment").val(),
-        asses : $('input[name="assess"]:checked').val(),
-        age : $("#age").val(),
+        prolificID: $("#ProlificID").val(),
         gender : $("#gender").val(),
-        education : $("#education").val(),
+        age : $("#age").val(),
+        language : $("#language").val(),
+        asses : $('input[name="assess"]:checked').val(),
+        problems: $("#problems").val(),
         comments : $("#comments").val(),
-        problems: $("#problems").val()
       };
       exp.go(); //use exp.go() if and only if there is no "present" data.
     }
@@ -228,7 +239,7 @@ function make_slides(f) {
           "subject_information" : exp.subj_data,
           "time_in_minutes" : (Date.now() - exp.startT)/60000
       };
-      setTimeout(function() {turk.submit(exp.data);}, 1000);
+      proliferate.submit(exp.data);
     }
   });
 
