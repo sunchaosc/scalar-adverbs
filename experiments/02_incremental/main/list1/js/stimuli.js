@@ -414,14 +414,14 @@ exp.stims =  [
         location2: "vase_5_p",
         location3: "basket_2-3_b-p",
         location4: "basket_2-3_p-b",
-        target: "2",
-        competitor: "1",
+        target: "1",
+        competitor: "2",
         condition: "late",
         modal: "zero",
         ExpFiller: "Filler",
-        correctAns: "AOI2",
+        correctAns: "AOI1",
         list: "1",
-        instruction3: "In the |basket, |zero of the flowers |are pink."
+        instruction3: "In the |vase, |zero of the flowers |are pink."
     },
    {	displayID: "27",
         location1: "vase_5_p",
