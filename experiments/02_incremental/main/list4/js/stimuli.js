@@ -10,7 +10,7 @@ exp.practice = [
         modal: "some",
         ExpFiller: "prac",
         correctAns: "AOI4",
-        list:"4"
+        list:"4",
         instruction1: "In the |basket, |some of the flowers are |blue."
     },
     {	displayID: "2",
@@ -24,7 +24,7 @@ exp.practice = [
         modal: "two",
         ExpFiller: "prac",
         correctAns: "AOI3",
-        list:"4"
+        list:"4",
         instruction1: "In the |vase, |two of the flowers are |pink."
     },
     {	displayID: "3",
@@ -38,7 +38,7 @@ exp.practice = [
         modal: "five",
         ExpFiller: "prac",
         correctAns: "AOI2",
-        list:"4"
+        list:"4",
         instruction1: "In the |basket, |five of the flowers are |yellow."
     },
     {	displayID: "4",
@@ -52,7 +52,7 @@ exp.practice = [
         modal: "none",
         ExpFiller: "prac",
         correctAns: "AOI1",
-        list:"4"
+        list:"4",
         instruction1: "In the |vase, |none of the flowers are |pink."
     },
    ];
@@ -69,7 +69,7 @@ exp.stims =  [
         modal: "none",
         ExpFiller: "Exp",
         correctAns: "AOI1",
-        list:"4"
+        list:"4",
         instruction3: "In the |basket, |none of the flowers are |pink."
     },
     {	displayID: "1",
@@ -83,7 +83,7 @@ exp.stims =  [
         modal: "none",
         ExpFiller: "Exp",
         correctAns: "AOI3",
-        list:"4"
+        list:"4",
         instruction3: "In the |basket, |none of the flowers are |blue."
     },
     {	displayID: "4",
@@ -97,7 +97,7 @@ exp.stims =  [
         modal: "none",
         ExpFiller: "Exp",
         correctAns: "AOI4",
-        list:"4"
+        list:"4",
         instruction3: "In the |vase, |none of the flowers are |blue."
     },
     {	displayID: "23",
@@ -111,7 +111,7 @@ exp.stims =  [
         modal: "none",
         ExpFiller: "Exp",
         correctAns: "AOI2",
-        list:"4"
+        list:"4",
         instruction3: "In the |vase, |none of the flowers are |yellow."
     },
     {	displayID: "17",
@@ -125,7 +125,7 @@ exp.stims =  [
         modal: "some",
         ExpFiller: "Exp",
         correctAns: "AOI3",
-        list:"4"
+        list:"4",
         instruction3: "In the |basket, |some of the flowers are |blue."
     },
     {	displayID: "10",
@@ -139,7 +139,7 @@ exp.stims =  [
         modal: "some",
         ExpFiller: "Exp",
         correctAns: "AOI4",
-        list:"4"
+        list:"4",
         instruction3: "In the |basket, |some of the flowers are |pink."
     },
         {	displayID: "3",
@@ -153,7 +153,7 @@ exp.stims =  [
         modal: "some",
         ExpFiller: "Exp",
         correctAns: "AOI1",
-        list:"4"
+        list:"4",
         instruction3: "In the |vase, |some of the flowers are |yellow."
     },
     {	displayID: "22",
@@ -167,7 +167,7 @@ exp.stims =  [
         modal: "some",
         ExpFiller: "Exp",
         correctAns: "AOI2",
-        list:"4"
+        list:"4",
         instruction3: "In the |vase, |some of the flowers are |yellow."
     },
     {	displayID: "7",
@@ -181,7 +181,7 @@ exp.stims =  [
         modal: "all",
         ExpFiller: "Exp",
         correctAns: "AOI4",
-        list:"4"
+        list:"4",
         instruction3: "In the |vase, |all of the flowers are |blue."
     },
     {	displayID: "14",
@@ -195,7 +195,7 @@ exp.stims =  [
         modal: "all",
         ExpFiller: "Exp",
         correctAns: "AOI2",
-        list:"4"
+        list:"4",
         instruction3: "In the |basket, |all of the flowers are |pink."
     },
     {	displayID: "18",
@@ -209,7 +209,7 @@ exp.stims =  [
         modal: "all",
         ExpFiller: "Exp",
         correctAns: "AOI1",
-        list:"4"
+        list:"4",
         instruction3: "In the |basket, |all of the flowers are |blue."
     },
     {	displayID: "9",
@@ -223,7 +223,7 @@ exp.stims =  [
         modal: "all",
         ExpFiller: "Exp",
         correctAns: "AOI3",
-        list:"4"
+        list:"4",
         instruction3: "In the |vase, |all of the flowers are |pink."
     },
     {	displayID: "2",
@@ -237,7 +237,7 @@ exp.stims =  [
         modal: "not all",
         ExpFiller: "Exp",
         correctAns: "AOI4",
-        list:"4"
+        list:"4",
         instruction3: "In the |vase, |not all of the flowers are |blue."
     },
     {	displayID: "15",
@@ -251,7 +251,7 @@ exp.stims =  [
         modal: "not all",
         ExpFiller: "Exp",
         correctAns: "AOI1",
-        list:"4"
+        list:"4",
         instruction3: "In the |vase, |not all of the flowers are |yellow."
     },
     {	displayID: "5",
@@ -265,7 +265,7 @@ exp.stims =  [
         modal: "not all",
         ExpFiller: "Exp",
         correctAns: "AOI2",
-        list:"4"
+        list:"4",
         instruction3: "In the |basket, |not all of the flowers are |pink."
     },
     {	displayID: "21",
@@ -279,7 +279,7 @@ exp.stims =  [
         modal: "not all",
         ExpFiller: "Exp",
         correctAns: "AOI3",
-        list:"4"
+        list:"4",
         instruction3: "In the |basket, |not all of the flowers are |pink."
     },
     {	displayID: "24",
@@ -293,7 +293,7 @@ exp.stims =  [
         modal: "five",
         ExpFiller: "Filler",
         correctAns: "AOI1",
-        list:"4"
+        list:"4",
         instruction3: "In the |vase, |five of the flowers are |yellow."
     },
     {	displayID: "19",
@@ -307,7 +307,7 @@ exp.stims =  [
         modal: "two",
         ExpFiller: "Filler",
         correctAns: "AOI4",
-        list:"4"
+        list:"4",
         instruction3: "In the |basket, |two of the flowers are |blue."
     },
     {	displayID: "20",
@@ -321,7 +321,7 @@ exp.stims =  [
         modal: "zero",
         ExpFiller: "Filler",
         correctAns: "AOI3",
-        list:"4"
+        list:"4",
         instruction3: "In the |vase, |zero of the flowers are |pink."
     },
    {	displayID: "12",
@@ -335,7 +335,7 @@ exp.stims =  [
         modal: "three",
         ExpFiller: "Filler",
         correctAns: "AOI3",
-        list:"4"
+        list:"4",
         instruction3: "In the |basket, |three of the flowers are |blue."
     },
     {	displayID: "11",
@@ -349,7 +349,7 @@ exp.stims =  [
         modal: "five",
         ExpFiller: "Filler",
         correctAns: "AOI2",
-        list:"4"
+        list:"4",
         instruction3: "In the |vase, |five of the flowers are |yellow."
     },
     {	displayID: "13",
@@ -363,7 +363,7 @@ exp.stims =  [
         modal: "two",
         ExpFiller: "Filler",
         correctAns: "AOI1",
-        list:"4"
+        list:"4",
         instruction3: "In the |basket, |two of the flowers are |yellow."
     },
     {	displayID: "8",
@@ -377,7 +377,7 @@ exp.stims =  [
         modal: "three",
         ExpFiller: "Filler",
         correctAns: "AOI2",
-        list:"4"
+        list:"4",
         instruction3: "In the |basket, |three of the flowers are |pink."
     },
     {	displayID: "16",
@@ -391,7 +391,7 @@ exp.stims =  [
         modal: "zero",
         ExpFiller: "Filler",
         correctAns: "AOI2",
-        list:"4"
+        list:"4",
         instruction3: "In the |vase, |zero of the flowers are |yellow."
     },
 
@@ -406,7 +406,7 @@ exp.stims =  [
         modal: "zero",
         ExpFiller: "Filler",
         correctAns: "AOI3",
-        list:"4"
+        list:"4",
         instruction3: "In the |basket, |zero of the flowers |are yellow."
     },
     {	displayID: "26",
@@ -420,7 +420,7 @@ exp.stims =  [
         modal: "zero",
         ExpFiller: "Filler",
         correctAns: "AOI1",
-        list:"4"
+        list:"4",
         instruction3: "In the |vase, |zero of the flowers |are pink."
     },
    {	displayID: "27",
@@ -434,7 +434,7 @@ exp.stims =  [
         modal: "two",
         ExpFiller: "Filler",
         correctAns: "AOI4",
-        list:"4"
+        list:"4",
         instruction3: "In the |basket, |two of the flowers are |blue."
     },
     {	displayID: "28",
@@ -448,7 +448,7 @@ exp.stims =  [
         modal: "two",
         ExpFiller: "Filler",
         correctAns: "AOI2",
-        list:"4"
+        list:"4",
         instruction3: "In the |vase, |two of the flowers are |pink."
     },
     {	displayID: "29",
@@ -462,7 +462,7 @@ exp.stims =  [
         modal: "three",
         ExpFiller: "Filler",
         correctAns: "AOI1",
-        list:"4"
+        list:"4",
         instruction3: "In the |basket, |three of the flowers are |pink."
     },
     {	displayID: "30",
@@ -476,7 +476,7 @@ exp.stims =  [
         modal: "three",
         ExpFiller: "Filler",
         correctAns: "AOI4",
-        list:"4"
+        list:"4",
         instruction3: "In the |vase, |three of the flowers are |yellow."
     },
     {	displayID: "31",
@@ -490,7 +490,7 @@ exp.stims =  [
         modal: "five",
         ExpFiller: "Filler",
         correctAns: "AOI2",
-        list:"4"
+        list:"4",
         instruction3: "In the |basket, |five of the flowers are |yellow."
     },
     {	displayID: "32",
@@ -504,7 +504,7 @@ exp.stims =  [
         modal: "five",
         ExpFiller: "Filler",
         correctAns: "AOI3",
-        list:"4"
+        list:"4",
         instruction3: "In the |vase, |five of the flowers are |blue."
     }
 
