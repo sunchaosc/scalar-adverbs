@@ -98,7 +98,7 @@ exp.stims =  [
         ExpFiller: "Exp",
         correctAns: "AOI3",
         list:"3",
-        instruction3: "In the |vase, |all of the flowers are |pink."
+        instruction3: "In the |vase, |all of the flowers are |yellow."
     },
     {	displayID: "23",
         location1: "basket_2-3_y-p",
@@ -112,7 +112,7 @@ exp.stims =  [
         ExpFiller: "Exp",
         correctAns: "AOI4",
         list:"3",
-        instruction3: "In the |vase, |all of the flowers are |yellow."
+        instruction3: "In the |vase, |all of the flowers are |pink."
     },
     {	displayID: "17",
         location1: "vase_5_b",
@@ -322,7 +322,7 @@ exp.stims =  [
         ExpFiller: "Filler",
         correctAns: "AOI4",
         list:"3",
-        instruction3: "vase_5_b"
+        instruction3: "In the |vase, |three of the flowers are |blue."
     },
    {	displayID: "12",
         location1: "basket_2-3_p-b",
