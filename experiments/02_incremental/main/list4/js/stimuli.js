@@ -196,7 +196,7 @@ exp.stims =  [
         ExpFiller: "Exp",
         correctAns: "AOI2",
         list:"4",
-        instruction3: "In the |basket, |all of the flowers are |pink."
+        instruction3: "In the |basket, |all of the flowers are |blue."
     },
     {	displayID: "18",
         location1: "basket_5_b",
@@ -297,10 +297,10 @@ exp.stims =  [
         instruction3: "In the |vase, |five of the flowers are |yellow."
     },
     {	displayID: "19",
-        location1: "vase_5_p",
-        location2: "vase_2-3_p-b",
-        location3: "basket_5_b",
-        location4: "basket_2-3_b-p",
+        location1: "basket_5_b",
+        location2: "basket_2-3_b-p",
+        location3: "vase_5_p",
+        location4: "vase_2-3_p-b",
         target: "4",
         competitor: "3",
         condition: "prag",
@@ -308,7 +308,7 @@ exp.stims =  [
         ExpFiller: "Filler",
         correctAns: "AOI4",
         list:"4",
-        instruction3: "In the |basket, |two of the flowers are |blue."
+        instruction3: "In the |vase, |two of the flowers are |pink."
     },
     {	displayID: "20",
         location1: "basket_2-3_b-p",
@@ -339,18 +339,18 @@ exp.stims =  [
         instruction3: "In the |basket, |three of the flowers are |blue."
     },
     {	displayID: "11",
-        location1: "basket_5_y",
-        location2: "basket_2-3_y-p",
-        location3: "vase_2-3_y-p",
-        location4: "vase_5_y",
+        location1: "vase_5_y",
+        location2: "vase_2-3_y-p",
+        location3: "basket_2-3_y-p",
+        location4: "basket_5_y",
         target: "4",
         competitor: "3",
         condition: "prag",
         modal: "five",
         ExpFiller: "Filler",
-        correctAns: "AOI2",
+        correctAns: "AOI4",
         list:"4",
-        instruction3: "In the |vase, |five of the flowers are |yellow."
+        instruction3: "In the |basket, |five of the flowers are |yellow."
     },
     {	displayID: "13",
         location1: "basket_2-3_y-b",
