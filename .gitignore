@@ -1,6 +1,9 @@
-*mturk/
-*Submiterator/
-*mturk-manage-2020-09-02/
-*analysis/
-*data/
-*prolific/
+# Ignore everything
+*
+
+# But keep this folder and its contents
+!/experiments/
+!/experiments/**
+
+# Keep .gitignore itself
+!.gitignore
