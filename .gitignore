@@ -2,8 +2,8 @@
 *
 
 # But keep this folder and its contents
-!/experiments/
-!/experiments/**
+!/exp1_selfpaced_modals/**
+!/pilot/**
 
 # Keep .gitignore itself
 !.gitignore
