@@ -1,4 +1,4 @@
 # Ignore raw data and analysis folders
 data/
 analysis/
-
+/*.R
