@@ -203,9 +203,37 @@
 	      <p>We would be interested in any comments you have about this experiment. Please type them here:</p>
 	      <textarea id="comments" rows="3" cols="50"></textarea>
 	      <br/>
-	      <button onclick="_s.submit()">Submit</button>
+	      <button onclick="validateAndSubmit()">Submit</button>
+
 	    </div>
 	</div>
+	<script>
+  function validateAndSubmit() {
+    const pid    = document.getElementById('ProlificID')?.value.trim();
+    const gender = document.getElementById('gender')?.value;
+    const ageStr = document.getElementById('age')?.value.trim();
+    const lang   = document.getElementById('language')?.value.trim();
+    const assess = document.querySelector('input[name="assess"]:checked');
+
+    const errs = [];
+
+    if (!pid) errs.push('Prolific ID is required.');
+    if (!gender) errs.push('Please select your gender.');
+    const ageNum = Number(ageStr);
+    if (!ageStr || !Number.isInteger(ageNum) || ageNum < 18 || ageNum > 99) {
+      errs.push('Please enter a valid age (18–99).');
+    }
+    if (!lang) errs.push('Native language is required.');
+    if (!assess) errs.push('Please answer whether you read the instructions.');
+
+    if (errs.length) {
+      alert('Please complete the questionnaire:\n\n' + errs.join('\n'));
+      return false; // block submit
+    }
+    // Everything looks good — proceed with the original submit
+    _s.submit();
+  }
+</script>
 
 
 	<div id="thanks" class="slide js" >
@@ -220,6 +248,7 @@
       	</div>
     	</div>
   	</div>
+
 
 </body>
 </html>
