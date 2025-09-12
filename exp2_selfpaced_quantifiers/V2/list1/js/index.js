@@ -33,14 +33,15 @@ function make_slides(f) {
 
       var correctAns = this.stim.correctAns;
         console.log(correctAns)
-      var instruction = this.stim.instruction1;
-      words = instruction.split("|")
-      init_instruction = words[0] + " ..."; // In the |
-      instruction1 = words[0]+ " " + words[1] + " ..."; // In the |basket, |
-      instruction2 = words[0]+ " " + words[1] + " " + words[2]  + " ...";  // In the |basket, | some of the flowers are \
-      instruction3 = words[0]+ " " + words[1] + " " + words[2] + " " + words[3];// In the |basket, | some of the flowers are \pink.
 
-      const instruction_array=[instruction1,instruction2,instruction3]
+      const instruction = this.stim.instruction1;
+      let words = instruction.split("|");
+      let init_instruction = words[0] + " ..."; // The|
+      let instruction1 = words[0] + " " + words[1] + " ..."; // The| arrow|
+      let instruction2 = words[0] + " " + words[1] + " " + words[2] + " ...";
+      let instruction3 = words[0] + " " + words[1] + " " + words[2] + " " + words[3];
+
+      const instruction_array = [instruction1, instruction2, instruction3];
 
       $(".sentence").html(init_instruction);
 
@@ -63,15 +64,16 @@ function make_slides(f) {
 
           if (exp.counter==3){
             if (loc === correctAns) {
-            $(".correct").show();
-            exp.counter++;
+              $(".correct").show();
+              exp.counter++;  // allow advance on next click
             }
             else {
-            $(".err").show();
-            exp.counter++;
+              $(".err").show();
+              // stay at same counter, do NOT advance
+              // participant must click the correct object to continue
             }
           }
-          else if (exp.counter>3){
+                    else if (exp.counter>3){
             exp.selection_array.push(loc)
             exp.counter = 0;
             $(".loc").unbind('click')
@@ -94,22 +96,22 @@ function make_slides(f) {
     },
 
     log_responses : function() {
-      exp.data_trials.push({
-          "displayID" : this.stim.displayID,
-          "ExpFiller" : this.stim.ExpFiller,
-          "location1" : this.stim.location1,
-          "location2" : this.stim.location2,
-          "location3" : this.stim.location3,
-          "location4" : this.stim.location4,
-          "condition" : this.stim.condition,
-          "target" : this.stim.target,
-          "competitor" : this.stim.competitor,
-          "modal" : this.stim.modal,
-          "instruction1" : this.stim.instruction1,
-          "correctAns"  : this.stim.correctAns,
-          "response" : exp.selection_array,
-        });
-      }
+    exp.data_trials.push({
+      "displayID"   : this.stim.displayID,
+      "ExpFiller"   : this.stim.ExpFiller,
+      "location1"   : this.stim.location1,
+      "location2"   : this.stim.location2,
+      "location3"   : this.stim.location3,
+      "location4"   : this.stim.location4,
+      "condition"   : this.stim.condition,
+      "target"      : this.stim.target,
+      "competitor"  : this.stim.competitor,
+      "modal"       : this.stim.modal,          // practice items DO have modal
+      "instruction1": this.stim.instruction1,   // practice uses instruction1
+      "correctAns"  : this.stim.correctAns,
+      "response"    : exp.selection_array
+  });
+}
 
   });
 
@@ -138,15 +140,19 @@ function make_slides(f) {
 
       this.stim = stim; // store this information in the slide so you can record it later
 
-      var instruction = stim.instruction3;
-      words = instruction.split("|")
-      init_instruction = words[0] + " ..."; // In the |
-      instruction1 = words[0]+ " " + words[1] + " ..."; // In the |basket, |
-      instruction2 = words[0]+ " " + words[1] + " " + words[2]  + " ...";  // In the |basket, | some of the flowers are \
-      instruction3 = words[0]+ " " + words[1] + " " + words[2] + " " + words[3];// In the |basket, | some of the flowers are \pink.
+      // --- capture presentation index for THIS trial ---
+      this.presentation_index = (exp.trial_index || 0) + 1; // 1-based
+      exp.trial_index = this.presentation_index;
 
-      const instruction_array=[instruction1,instruction2,instruction3]
 
+      const instruction = stim.instruction3;
+      let words = instruction.split("|");
+      let init_instruction = words[0] + " ..."; // The
+      let instruction1 = words[0] + " " + words[1] + " ..."; // The| arrow|
+      let instruction2 = words[0] + " " + words[1] + " " + words[2] + " ...";
+      let instruction3 = words[0] + " " + words[1] + " " + words[2] + " " + words[3];
+
+      const instruction_array = [instruction1, instruction2, instruction3];
 
       $(".instruction").html(init_instruction);
 
@@ -192,24 +198,26 @@ function make_slides(f) {
     },
     log_responses : function() {
     exp.data_trials.push({
-        "displayID" : this.stim.displayID,
-        "location1" : this.stim.location1,
-        "location2" : this.stim.location2,
-        "location3" : this.stim.location3,
-        "location4" : this.stim.location4,
-        "target" : this.stim.target,
-        "competitor" : this.stim.competitor,
-        "condition" : this.stim.condition,
-        "modal" : this.stim.modal,
-        "ExpFiller" : this.stim.ExpFiller,
-        "correctAns" : this.stim.correctAns,
-        "list" : this.stim.list,
-        "instruction3" : this.stim.instruction3,
-        "response_times" : exp.time_array,
-        "response" : exp.selection_array,
+      "displayID"     : this.stim.displayID,
+      "location1"     : this.stim.location1,
+      "location2"     : this.stim.location2,
+      "location3"     : this.stim.location3,
+      "location4"     : this.stim.location4,
+      "target"        : this.stim.target,
+      "competitor"    : this.stim.competitor,
+      "condition"     : this.stim.condition,     // from CSV 'modal' in your build
+      // "modal"       : this.stim.modal,        // REMOVE (not in exp.stims)
+      "ExpFiller"     : this.stim.ExpFiller,
+      "correctAns"    : this.stim.correctAns,
+      "list"          : this.stim.list,
+      "instruction3"  : this.stim.instruction3,
+      "response_times": exp.time_array,
+      "response"      : exp.selection_array,
+      "trial_in_list" : this.stim.trial_in_list,
+      "variant"       : this.stim.variant,
+      "presentation_index": this.presentation_index
     });
-
-    }
+}
   });
 
   slides.subj_info =  slide({
@@ -235,9 +243,9 @@ function make_slides(f) {
           "trials" : exp.data_trials,
           "catch_trials" : exp.catch_trials,
           "system" : exp.system,
-          "condition" : exp.condition,
           "subject_information" : exp.subj_data,
-          "time_in_minutes" : (Date.now() - exp.startT)/60000
+          "time_in_minutes" : (Date.now() - exp.startT)/60000,
+          "randomized_order"  : exp.randomized_order
       };
       proliferate.submit(exp.data);
     }
@@ -261,10 +269,13 @@ function init() {
     };
 
   exp.stims_shuffled = _.shuffle(exp.stims);
+    //exp.stims_shuffled = exp.stims; // keep as-is, no shuffle
+  exp.randomized_order = exp.stims_shuffled.map(s => s.displayID); // full sequence for the record
+
+
 
   //blocks of the experiment:
   exp.structure=["i0", "instructions", "practice", "afterpractice", "trial", 'subj_info', 'thanks'];
-  //exp.structure=["i0", "instructions", "trial", 'subj_info', 'thanks'];
 
   exp.data_trials = [];
   //make corresponding slides:
