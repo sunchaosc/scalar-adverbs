@@ -8,11 +8,11 @@ exp.practice = [
         target: "4",
         competitor: "3",
         condition: "prac",
-        modal: "some",
+        modal: "two",
         ExpFiller: "prac",
         correctAns: "AOI4",
         list: "1",
-        instruction1: "In the |basket, |some of the flowers are |pink"
+        instruction1: "In the |basket, |two of the flowers are |pink"
     },
     {	displayID: "2",
         location1: "basket_5_y",
@@ -50,11 +50,11 @@ exp.practice = [
         target: "1",
         competitor: "2",
         condition: "prac",
-        modal: "none",
+        modal: "zero",
         ExpFiller: "prac",
         correctAns: "AOI1",
         list: "1",
-        instruction1: "In the |vase, |none of the flowers are |blue."
+        instruction1: "In the |vase, |zero of the flowers are |blue."
     },
    ];
 
