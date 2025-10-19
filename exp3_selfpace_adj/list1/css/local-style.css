@@ -12,15 +12,32 @@
   width: auto;
 }
 
-.grid-container {
+/*.grid-container {
 	display: grid;
 	grid-template-columns: auto;
 	grid-template-rows: auto;
 	grid-gap: 0px;
-	/* background-color: #2196F3; */
+ background-color: #2196F3; 
 	padding: 0px;
 	align-items: center;
 	justify-items: center;
+} */
+
+.grid-container {
+  display: grid;
+
+  /* Left and right columns size to content; middle column fixed to 80px (adjustable) */
+  grid-template-columns: max-content 80px max-content;
+  grid-template-rows: max-content 80px max-content;
+
+  /* Let the grid be only as wide as needed; center it on the page */
+  width: max-content;         /* or: inline-size: max-content; */
+  margin: 0 auto;
+
+  grid-gap: 0;
+  padding: 0;
+  align-items: center;
+  justify-items: center;
 }
 
 .grid-container > div {
@@ -60,6 +77,19 @@
 	grid-column-end: 2;
 	grid-row-start: 2;
 	grid-row-start: 2;
+}
+/* Practice instruction line */
+.sentence {
+  font-size: 22px;     /* try 22–26px */
+  line-height: 1.35;
+  font-weight: 500;    /* a touch bolder; optional */
+}
+
+/* Main-trial instruction line */
+.instruction {
+  font-size: 22px;     /* match .sentence */
+  line-height: 1.35;
+  font-weight: 500;
 }
 /*.loc6 {
 	grid-column-start: 4;
