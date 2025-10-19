@@ -22,7 +22,7 @@ function make_slides(f) {
       $(".err").hide();
       $(".correct").hide();
     },
-    present: exp.practice,
+    present: exp.practice_shuffled,
     present_handle : function(stim) {
 
       exp.selection_array=[];
@@ -45,13 +45,13 @@ function make_slides(f) {
 
       $(".sentence").html(init_instruction);
 
-      var loc1_img = '<img src="images/'+this.stim.location1+'.png" style="height:150px" class="left">';
+      var loc1_img = '<img src="images/'+this.stim.location1+'.png"  class="left">';
       $(".loc1").html(loc1_img);
-      var loc2_img = '<img src="images/'+this.stim.location2+'.png" style="height:150px" class="center">';
+      var loc2_img = '<img src="images/'+this.stim.location2+'.png"  class="center">';
       $(".loc2").html(loc2_img);
-      var loc3_img = '<img src="images/'+this.stim.location3+'.png" style="height:150px" class="center">';
+      var loc3_img = '<img src="images/'+this.stim.location3+'.png"  class="center">';
       $(".loc3").html(loc3_img);
-      var loc4_img = '<img src="images/'+this.stim.location4+'.png" style="height:150px" class="center">';
+      var loc4_img = '<img src="images/'+this.stim.location4+'.png"  class="center">';
       $(".loc4").html(loc4_img);
       var loc5_img = '<img src="images/loc5.png" style="height:50px" class="center">';
       $(".loc5").html(loc5_img);
@@ -154,14 +154,14 @@ function make_slides(f) {
       const instruction_array = [instruction1, instruction2, instruction3];
 
       $(".instruction").html(init_instruction);
-
-      var loc1_img = '<img src="images/'+stim.location1+'.png"style="height:150px" class="left">';
+      
+      var loc1_img = '<img src="images/'+stim.location1+'.png"  class="left">';
       $(".loc1").html(loc1_img);
-      var loc2_img = '<img src="images/'+stim.location2+'.png" style="height:150px" class="center">';
+      var loc2_img = '<img src="images/'+stim.location2+'.png"  class="center">';
       $(".loc2").html(loc2_img);
-      var loc3_img = '<img src="images/'+stim.location3+'.png" style="height:150px" class="center">';
+      var loc3_img = '<img src="images/'+stim.location3+'.png"  class="center">';
       $(".loc3").html(loc3_img);
-      var loc4_img = '<img src="images/'+stim.location4+'.png" style="height:150px" class="center">';
+      var loc4_img = '<img src="images/'+stim.location4+'.png"  class="center">';
       $(".loc4").html(loc4_img);
       var loc5_img = '<img src="images/loc5.png" style="height:50px" class="center">';
       $(".loc5").html(loc5_img);
@@ -251,6 +251,91 @@ function make_slides(f) {
   return slides;
 }
 
+// Treat everything that's not "exp" as "non"
+function categoryOf(stim) {
+  return (stim.ExpFiller === "exp") ? "exp" : "non";
+}
+
+// Verify a sequence never has > maxRun of the same exp/non category
+function violatesMaxRun(seq, maxRun) {
+  let run = 1;
+  for (let i = 1; i < seq.length; i++) {
+    const prev = categoryOf(seq[i - 1]);
+    const cur  = categoryOf(seq[i]);
+    if (cur === prev) {
+      run += 1;
+      if (run > maxRun) return true;
+    } else {
+      run = 1;
+    }
+  }
+  return false;
+}
+
+// Build a sequence with maxRun constraint between "exp" and "non"
+function constrainedShuffleStims(stims, maxRun = 2, maxTries = 2000) {
+  // Split pools
+  let expPool = stims.filter(s => s.ExpFiller === "exp");
+  let nonPool = stims.filter(s => s.ExpFiller !== "exp");
+
+  // Fast path: try a few naive shuffles
+  for (let t = 0; t < 50; t++) {
+    const cand = _.shuffle(stims);
+    if (!violatesMaxRun(cand, maxRun)) return cand;
+  }
+
+  // Greedy + randomized construction
+  let best = null;
+  for (let t = 0; t < maxTries; t++) {
+    let e = _.shuffle(expPool.slice());
+    let n = _.shuffle(nonPool.slice());
+
+    let seq = [];
+    let lastCat = null;
+    let run = 0;
+
+    while (e.length || n.length) {
+      // Which categories are allowed next?
+      let allowed = [];
+      if (lastCat === "exp" && run >= maxRun) {
+        if (n.length) allowed = ["non"]; else allowed = ["exp"];
+      } else if (lastCat === "non" && run >= maxRun) {
+        if (e.length) allowed = ["exp"]; else allowed = ["non"];
+      } else {
+        if (e.length) allowed.push("exp");
+        if (n.length) allowed.push("non");
+      }
+
+      // Weighted pick to avoid starvation
+      let pickCat;
+      if (allowed.length === 2) {
+        const re = e.length, rn = n.length;
+        pickCat = (Math.random() < re / (re + rn)) ? "exp" : "non";
+      } else {
+        pickCat = allowed[0];
+      }
+
+      if (pickCat === "exp") {
+        const i = Math.floor(Math.random() * e.length);
+        seq.push(e.splice(i, 1)[0]);
+        if (lastCat === "exp") run += 1; else { lastCat = "exp"; run = 1; }
+      } else {
+        const i = Math.floor(Math.random() * n.length);
+        seq.push(n.splice(i, 1)[0]);
+        if (lastCat === "non") run += 1; else { lastCat = "non"; run = 1; }
+      }
+    }
+
+    if (!violatesMaxRun(seq, maxRun)) return seq;
+    // keep best (fewest violations) in case we need a fallback
+    if (!best || Math.random() < 0.3) best = seq;
+  }
+
+  console.warn("constrainedShuffleStims: fell back to near-best sequence");
+  return best || _.shuffle(stims);
+}
+
+
 /// init ///
 function init() {
   exp.trials = [];
@@ -264,8 +349,9 @@ function init() {
       screenW: screen.width,
       screenUW: exp.width
     };
-
-  exp.stims_shuffled = _.shuffle(exp.stims);
+  exp.practice_shuffled = _.shuffle(exp.practice);
+  exp.stims_shuffled = constrainedShuffleStims(exp.stims, 2);
+  //exp.stims_shuffled = _.shuffle(exp.stims);
     //exp.stims_shuffled = exp.stims; // keep as-is, no shuffle
   exp.randomized_order = exp.stims_shuffled.map(s => s.displayID); // full sequence for the record
 

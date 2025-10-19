@@ -43,17 +43,17 @@ exp.practice = [
   },
   {
     displayID: "4",
-    location1: "flask-cool-orange",
-    location2: "flask-cold-green",
-    location3: "beaker-cool-green",
-    location4: "beaker-cold-orange",
+    location1: "flask-cold-orange",
+    location2: "flask-cool-green",
+    location3: "beaker-cold-green",
+    location4: "beaker-cool-orange",
     target: "AOI4",
     competitor: "AOI3",
-    condition: "0",
+    condition: "10",
     ExpFiller: "prac",
     correctAns: "AOI4",
     list: "practice",
-    instruction1: "The water | in the beaker | is about 0 degree| and orange."
+    instruction1: "The water | in the beaker | is about 10 degree| and orange."
   }
 ];
 

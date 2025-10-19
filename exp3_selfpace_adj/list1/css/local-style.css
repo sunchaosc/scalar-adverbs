@@ -7,9 +7,11 @@
 	text-align: left;
 }
 .grid-container img {
-  max-width: 320px;
-  height: auto;
+  max-width: none;
+  height: 200px;
+  width: auto;
 }
+
 .grid-container {
 	display: grid;
 	grid-template-columns: auto;

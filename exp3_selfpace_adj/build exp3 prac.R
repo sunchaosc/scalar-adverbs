@@ -26,6 +26,7 @@ exp_map <- list(
 )
 num_map <- list(
   `60` = list(tar="warm", comp="hot"),
+  `10` = list(tar="cool", comp="cold"), 
   `0`  = list(tar="cold", comp="cool")
 )
 
@@ -101,11 +102,14 @@ plan <- list(
   ),
   # 4) NUMBER: 0, FLIP, target = beaker, color = orange, corner RB
   #   FLIP ⇒ beaker target = first of pair ("o")
+  # 4) NUMBER: 10, FLIP, target = beaker, color = orange, corner RB
+  #   Mapping: 10 ⇒ target=cool, competitor=cold; FLIP keeps beaker target = first color ("o")
   list(
-    condition="number", adj="0", degree=0,
-    spec=num_map[["0"]], pair="o-g", flip=TRUE,
+    condition="number", adj="10", degree=10,
+    spec=num_map[["10"]], pair="o-g", flip=TRUE,
     target_object="beaker", force_color="o", target_pos="RB"
   )
+  
 )
 
 rows <- list(); k <- 1L
