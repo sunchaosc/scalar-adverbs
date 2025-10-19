@@ -27,8 +27,8 @@
   display: grid;
 
   /* Left and right columns size to content; middle column fixed to 80px (adjustable) */
-  grid-template-columns: max-content 80px max-content;
-  grid-template-rows: max-content 80px max-content;
+  grid-template-columns: max-content 160px max-content;
+  grid-template-rows: max-content 160px max-content;
 
   /* Let the grid be only as wide as needed; center it on the page */
   width: max-content;         /* or: inline-size: max-content; */
@@ -80,14 +80,14 @@
 }
 /* Practice instruction line */
 .sentence {
-  font-size: 22px;     /* try 22–26px */
+  font-size: 24px;     /* try 22–26px */
   line-height: 1.35;
   font-weight: 500;    /* a touch bolder; optional */
 }
 
 /* Main-trial instruction line */
 .instruction {
-  font-size: 22px;     /* match .sentence */
+  font-size: 24px;     /* match .sentence */
   line-height: 1.35;
   font-weight: 500;
 }
