@@ -27,8 +27,8 @@
   display: grid;
 
   /* Left and right columns size to content; middle column fixed to 80px (adjustable) */
-  grid-template-columns: max-content 160px max-content;
-  grid-template-rows: max-content 160px max-content;
+  grid-template-columns: max-content 200px max-content;
+  grid-template-rows: max-content 120px max-content;
 
   /* Let the grid be only as wide as needed; center it on the page */
   width: max-content;         /* or: inline-size: max-content; */
