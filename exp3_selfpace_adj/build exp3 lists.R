@@ -265,7 +265,11 @@ make_expnum_trials_from_12 <- function(list_id, D12) {
 # ==========================================================
 
 build_typeB_designs <- function() {
-  # Two displays per degree, kept same-side; choose pairs to give two different target colors
+  # For each degree we make exactly TWO displays:
+  #   - Display A: beaker at BASE temp (deg2ft), flask at PARTNER temp
+  #   - Display B: beaker at PARTNER temp, flask at BASE temp
+  #
+  # This lets us always pick the target from the side that matches the degree.
   plan <- list(
     `0`   = c("o-g","o-p"),
     `10`  = c("g-p","o-g"),
@@ -277,16 +281,26 @@ build_typeB_designs <- function() {
     base <- deg2ft[[as.character(deg)]]
     partner <- if (base %in% c("warm","hot")) if (base=="warm") "hot" else "warm"
     else if (base=="cool") "cold" else "cool"
-    for (pair in plan[[as.character(deg)]]) {
-      imgs <- build_typeB_display(pair, beaker_ft=base, flask_ft=partner)
-      register_display(imgs, force_id = id)
-      out[[length(out)+1]] <- list(id=id, degree=deg, pair=pair, imgs=imgs)
-      id <- id+1L
-    }
+    pairs <- plan[[as.character(deg)]]  # length 2
+    
+    # A: base on BEAKER side
+    imgsA <- build_typeB_display(pairs[[1]], beaker_ft = base,   flask_ft = partner)
+    register_display(imgsA, force_id = id)
+    out[[length(out)+1]] <- list(id = id, degree = deg, pair = pairs[[1]],
+                                 imgs = imgsA, base_on = "beaker")
+    id <- id + 1L
+    
+    # B: base on FLASK side
+    imgsB <- build_typeB_display(pairs[[2]], beaker_ft = partner, flask_ft = base)
+    register_display(imgsB, force_id = id)
+    out[[length(out)+1]] <- list(id = id, degree = deg, pair = pairs[[2]],
+                                 imgs = imgsB, base_on = "flask")
+    id <- id + 1L
   }
-  stopifnot(id==21L)
+  stopifnot(id == 21L)  # IDs 13..20
   out
 }
+
 
 # Desired per-list Type-B color totals (target color counts) as (3,3,2) rotated
 tb_color_quota <- function(list_id) {
@@ -302,80 +316,77 @@ tb_color_quota <- function(list_id) {
 #  - two trials per degree (different colors)
 #  - overall 8 trials hit the requested (3,3,2) target by choosing target object per display
 make_typeB_trials <- function(list_id, designs) {
-  quota <- tb_color_quota(list_id)         # desired (3,3,2) split per list (rotated across lists)
-  left <- quota
+  quota <- tb_color_quota(list_id)  # desired per-list (3,3,2)
+  left  <- quota
   rows <- list(); k <- 1L
   
   by_deg <- split(designs, sapply(designs, function(x) as.character(x$degree)))
   for (deg in c("0","10","60","100")) {
-    ds <- by_deg[[as.character(deg)]]
-    stopifnot(length(ds) == 2)
+    ds <- by_deg[[deg]]; stopifnot(length(ds) == 2)
+    base_ft <- deg2ft[[deg]]
     
-    # ---- Display A: choose target color greedily by remaining quota
-    pairA <- strsplit(ds[[1]]$pair, "-", TRUE)[[1]]       # c(firstColor, secondColor)
-    # pick the one in pairA with larger remaining quota
-    scoresA <- left[pairA]; scoresA[is.na(scoresA)] <- -Inf
-    choiceA <- pairA[ which.max(scoresA) ]
-    
-    if (choiceA == pairA[1]) {
-      imgs <- ds[[1]]$imgs
-      tgti <- imgs["b1"]; cmpi <- imgs["b2"]; horiz <- imgs["f1"]; other <- imgs["f2"]; obj <- "beaker"
-    } else {
-      imgs <- ds[[1]]$imgs
-      tgti <- imgs["f2"]; cmpi <- imgs["f1"]; horiz <- imgs["b1"]; other <- imgs["b2"]; obj <- "flask"
+    # ---- Pick colors for the two displays (must differ)
+    # For Display A (whatever its pair), choose the color with larger remaining quota.
+    pick_color_from_pair <- function(pair, avoid = NULL) {
+      opts <- strsplit(pair, "-", TRUE)[[1]]
+      if (!is.null(avoid)) opts <- setdiff(opts, avoid)
+      if (!length(opts)) opts <- strsplit(pair, "-", TRUE)[[1]]  # fallback
+      sc <- left[opts]; sc[is.na(sc)] <- -Inf
+      opts[which.max(sc)]
     }
-    tgt <- parse_img(tgti); col <- clr_letter(tgt$color_word)
-    s <- sent_num(obj, as.integer(deg), col)
-    lay <- place_images(tgti, cmpi, horiz, other, target_pos="LT")
-    rows[[k]] <- data.frame(
-      list_id=list_id, list_name=paste0("List",list_id),
-      condition="typeB", display_id=ds[[1]]$id, target_object=obj,
-      adj=as.character(deg), degree=as.integer(deg),
-      target_image=tgti, competitor_image=cmpi, other1_image=horiz, other2_image=other,
-      LT=lay["LT"], RT=lay["RT"], LB=lay["LB"], RB=lay["RB"],
-      mentioned_color=col, mentioned_color_word=tgt$color_word,
-      sentence=s, instruction=s, stringsAsFactors=FALSE
-    ); k <- k+1L
-    left[col] <- left[col] - 1L
     
-    # ---- Display B: must be a different color than A; prefer higher remaining quota among its pair
-    pairB <- strsplit(ds[[2]]$pair, "-", TRUE)[[1]]
-    # available options for B (prefer different from A)
-    optsB <- setdiff(pairB, col)
-    if (length(optsB) == 0) optsB <- pairB  # safety fallback, but construction should avoid this
-    
-    scoresB <- left[optsB]; scoresB[is.na(scoresB)] <- -Inf
-    choiceB <- optsB[ which.max(scoresB) ]
-    
-    if (choiceB == pairB[1]) {
-      imgs <- ds[[2]]$imgs
-      tgti <- imgs["b1"]; cmpi <- imgs["b2"]; horiz <- imgs["f1"]; other <- imgs["f2"]; obj <- "beaker"
-    } else {
-      imgs <- ds[[2]]$imgs
-      tgti <- imgs["f2"]; cmpi <- imgs["f1"]; horiz <- imgs["b1"]; other <- imgs["b2"]; obj <- "flask"
+    # For each display, target must be the object whose temp == BASE
+    build_trial_from_display <- function(D, chosen_col) {
+      imgs <- D$imgs
+      if (D$base_on == "beaker") {
+        # base temp lives on beaker side -> target beaker at chosen color
+        pair <- strsplit(D$pair, "-", TRUE)[[1]]
+        if (chosen_col == pair[1]) {
+          tgti <- imgs["b1"]; cmpi <- imgs["b2"]; horiz <- imgs["f1"]; other <- imgs["f2"]; obj <- "beaker"
+        } else {
+          tgti <- imgs["b2"]; cmpi <- imgs["b1"]; horiz <- imgs["f2"]; other <- imgs["f1"]; obj <- "beaker"
+        }
+      } else {
+        # base temp lives on flask side -> target flask at chosen color
+        pair <- strsplit(D$pair, "-", TRUE)[[1]]
+        if (chosen_col == pair[1]) {
+          tgti <- imgs["f1"]; cmpi <- imgs["f2"]; horiz <- imgs["b1"]; other <- imgs["b2"]; obj <- "flask"
+        } else {
+          tgti <- imgs["f2"]; cmpi <- imgs["f1"]; horiz <- imgs["b2"]; other <- imgs["b1"]; obj <- "flask"
+        }
+      }
+      tgt <- parse_img(tgti); stopifnot(tgt$ft == base_ft)  # ensure degree→target-temp
+      col <- clr_letter(tgt$color_word)
+      s <- sent_num(obj, as.integer(deg), col)
+      lay <- place_images(tgti, cmpi, horiz, other, target_pos = "LT")
+      data.frame(
+        list_id = list_id, list_name = paste0("List", list_id),
+        condition = "typeB", display_id = D$id, target_object = obj,
+        adj = as.character(deg), degree = as.integer(deg),
+        target_image = tgti, competitor_image = cmpi,
+        other1_image = horiz, other2_image = other,
+        LT = lay["LT"], RT = lay["RT"], LB = lay["LB"], RB = lay["RB"],
+        mentioned_color = col, mentioned_color_word = tgt$color_word,
+        sentence = s, instruction = s, stringsAsFactors = FALSE
+      )
     }
-    tgt <- parse_img(tgti); col2 <- clr_letter(tgt$color_word)
-    if (col2 == col) stop("TypeB per-degree produced the same color twice; adjust pairs/quota.")
-    s <- sent_num(obj, as.integer(deg), col2)
-    lay <- place_images(tgti, cmpi, horiz, other, target_pos="LT")
-    rows[[k]] <- data.frame(
-      list_id=list_id, list_name=paste0("List",list_id),
-      condition="typeB", display_id=ds[[2]]$id, target_object=obj,
-      adj=as.character(deg), degree=as.integer(deg),
-      target_image=tgti, competitor_image=cmpi, other1_image=horiz, other2_image=other,
-      LT=lay["LT"], RT=lay["RT"], LB=lay["LB"], RB=lay["RB"],
-      mentioned_color=col2, mentioned_color_word=tgt$color_word,
-      sentence=s, instruction=s, stringsAsFactors=FALSE
-    ); k <- k+1L
-    left[col2] <- left[col2] - 1L
+    
+    # Choose colors: different within the degree, respect quota greedily
+    colA <- pick_color_from_pair(ds[[1]]$pair, avoid = NULL)
+    trialA <- build_trial_from_display(ds[[1]], colA); left[colA] <- left[colA] - 1L
+    
+    colB <- pick_color_from_pair(ds[[2]]$pair, avoid = trialA$mentioned_color[1])
+    trialB <- build_trial_from_display(ds[[2]], colB); left[colB] <- left[colB] - 1L
+    
+    rows[[k]] <- trialA; k <- k + 1L
+    rows[[k]] <- trialB; k <- k + 1L
   }
   
-  # Assert quotas met (each color >= 2; total 8)
   used <- quota - left
-  stopifnot(all(used >= 2), sum(used) == 8)
-  
+  stopifnot(all(used >= 2), sum(used) == 8)  # 8 typeB targets per list, (3,3,2) split
   dplyr::bind_rows(rows)
 }
+
 
 
 # ==========================================================

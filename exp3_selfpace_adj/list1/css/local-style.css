@@ -28,7 +28,7 @@
 
   /* Left and right columns size to content; middle column fixed to 80px (adjustable) */
   grid-template-columns: max-content 250px max-content;
-  grid-template-rows: max-content 120px max-content;
+  grid-template-rows: max-content 80px max-content;
 
   /* Let the grid be only as wide as needed; center it on the page */
   width: max-content;         /* or: inline-size: max-content; */
@@ -77,6 +77,10 @@
 	grid-column-end: 2;
 	grid-row-start: 2;
 	grid-row-start: 2;
+}
+.loc5 img {
+  height: 80px;
+  width: auto;
 }
 /* Practice instruction line */
 .sentence {
