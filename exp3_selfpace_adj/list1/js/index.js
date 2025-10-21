@@ -370,14 +370,10 @@ function init() {
   $('.slide').hide(); //hide everything
 
   //make sure turkers have accepted HIT (or you're not in mturk)
-  $("#start_button").click(function() {
-    if (turk.previewMode) {
-      $("#mustaccept").show();
-    } else {
-      $("#start_button").click(function() {$("#mustaccept").show();});
-      exp.go();
-    }
-  });
+  $("#start_button").on("click", function () {
+  exp.go();
+});
+;
 
   exp.go(); //show first slide
 }
