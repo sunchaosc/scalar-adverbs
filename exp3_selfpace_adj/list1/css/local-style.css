@@ -6,16 +6,7 @@
 .consent{
 	text-align: left;
 }
-.grid-container {
-  display: grid;
-  grid-template-columns: max-content 250px max-content;
-  grid-template-rows: max-content 100px max-content;  /* slightly larger center gap */
-  width: max-content;
-  margin: 0 auto;
-  grid-gap: 10px;
-  align-items: center;
-  justify-items: center;
-}
+
 
 .grid-container img {
   max-width: none;
@@ -39,7 +30,7 @@
 
   /* Left and right columns size to content; middle column fixed to 80px (adjustable) */
   grid-template-columns: max-content 250px max-content;
-  grid-template-rows: max-content 80px max-content;
+  grid-template-rows: max-content 50px max-content;
 
   /* Let the grid be only as wide as needed; center it on the page */
   width: max-content;         /* or: inline-size: max-content; */
