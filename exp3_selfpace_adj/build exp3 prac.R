@@ -31,8 +31,26 @@ num_map <- list(
 )
 
 # sentence builders (pipes exact)
-sent_exp <- function(obj, adj, col) paste0("The water | in the ", obj, " | is ", adj, " | and ", color_word[[col]], ".")
-sent_num <- function(obj, deg, col) paste0("The water | in the ", obj, " | is about ", deg, " degree| and ", color_word[[col]], ".")
+# ---- add this helper above the sentence builders ----
+to_surface_adj <- function(adj) if (adj == "freezing") "frozen" else adj
+
+# ---- replace your sent_exp with this ----
+sent_exp <- function(obj, adj, col) {
+  paste0("The water | in the ", obj, " | is ",
+         to_surface_adj(adj), " | and ", color_word[[col]], ".")
+}
+
+sent_num <- function(obj, deg, col) {
+  val <- if (deg == 0) {
+    "below 0 \u00B0C"
+  } else if (deg == 100) {
+    "above 100 \u00B0C"
+  } else {
+    paste0("about ", deg, " \u00B0C")
+  }
+  paste0("The water | in the ", obj, " | is ", val, "| and ", color_word[[col]], ".")
+}
+
 
 # Place 4 images on grid given a target position
 place_images <- function(target_img, competitor_img, horiz_img, other_img, target_pos) {
@@ -179,7 +197,11 @@ df <- df %>% add_locs()
 stopifnot(all(sort(df$target_loc) == c("LB","LT","RB","RT")))
 
 # --- Write CSV ---
+# --- Write CSV ---
 dir.create("practice", showWarnings = FALSE, recursive = TRUE)
-write.csv(df, file.path("practice","practice_trials.csv"), row.names = FALSE)
+
+# install.packages("readr")  # if needed
+library(readr)
+readr::write_excel_csv(df, file.path("practice","practice_trials.csv"))
 
 cat("Practice trials written to ./practice/practice_trials.csv\n")

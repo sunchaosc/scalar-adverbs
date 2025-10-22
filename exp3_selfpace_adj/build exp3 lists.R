@@ -24,9 +24,10 @@ suppressPackageStartupMessages({ library(dplyr); library(stringr) })
 set.seed(20251017)
 
 # ---------- vocab ----------
+# ---------- vocab ----------
 color_word <- c(o="orange", g="green", p="purple")
-temp2adj <- c(warm="warm", hot="boiling", cool="cool", cold="freezing")
-adj2deg  <- c(warm=60, boiling=100, cool=10, freezing=0)
+temp2adj <- c(warm="warm", hot="boiling", cool="cool", cold="frozen")  # <- was "freezing"
+adj2deg  <- c(warm=60, boiling=100, cool=10, frozen=0)              # unchanged (internal)
 deg2ft   <- c(`0`="cold", `10`="cool", `60`="warm", `100`="hot")
 
 img_name <- function(obj, ft, c) paste0(obj,"-",ft,"-",color_word[[c]],".png")
@@ -85,7 +86,17 @@ num_map <- list(
 
 # ---------- sentences (pipes exact) ----------
 sent_exp <- function(obj, adj, col) paste0("The water | in the ", obj, " | is ", adj, " | and ", color_word[[col]], ".")
-sent_num <- function(obj, deg, col) paste0("The water | in the ", obj, " | is about ", deg, " degree| and ", color_word[[col]], ".")
+sent_num <- function(obj, deg, col) {
+  val <- if (deg == 0) {
+    "below 0 \u00B0C"
+  } else if (deg == 100) {
+    "above 100 \u00B0C"
+  } else {
+    paste0("about ", deg, " \u00B0C")
+  }
+  paste0("The water | in the ", obj, " | is ", val, "| and ", color_word[[col]], ".")
+}
+
 
 # ---------- display registry (global IDs) ----------
 .make_sig <- function(imgs4) paste(sort(imgs4), collapse=" | ")
@@ -427,18 +438,24 @@ build_one_list <- function(list_id, D12, tb_designs) {
 build_all_lists <- function(out_dir="lists_followup_spec_v9") {
   dir.create(out_dir, recursive=TRUE, showWarnings=FALSE)
   
-  D12 <- build_12_displays()       # fixed 12 displays (IDs 1..12)
+  D12 <- build_12_displays()        # fixed 12 displays (IDs 1..12)
   tb_designs <- build_typeB_designs() # fixed 8 displays (IDs 13..20)
   
   lists <- lapply(1:4, function(L) build_one_list(L, D12, tb_designs))
   names(lists) <- paste0("List",1:4)
   
-  for (nm in names(lists)) write.csv(lists[[nm]], file.path(out_dir, paste0(nm, ".csv")), row.names=FALSE)
-  combined <- dplyr::bind_rows(lists, .id="which_list")
-  write.csv(combined, file.path(out_dir, "ALL_lists.csv"), row.names=FALSE)
+  # write CSVs (UTF-8 with BOM for Excel)
+  library(readr)
+  for (nm in names(lists)) {
+    readr::write_excel_csv(lists[[nm]], file.path(out_dir, paste0(nm, ".csv")))
+  }
+  
+  combined <- dplyr::bind_rows(lists, .id = "which_list")     # <-- add this
+  readr::write_excel_csv(combined, file.path(out_dir, "ALL_lists.csv"))
   
   invisible(lists)
 }
+
 
 lists_out <- build_all_lists()
 cat("Done. EXP+NUMBER use displays 1..12 exactly twice; TYPE-B uses 13..20 with (3,3,2) color splits; corners 8 each.\n")

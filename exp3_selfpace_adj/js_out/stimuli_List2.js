@@ -25,7 +25,7 @@ exp.practice = [
     ExpFiller: "prac",
     correctAns: "AOI3",
     list: "practice",
-    instruction1: "The water | in the flask | is freezing | and green."
+    instruction1: "The water | in the flask | is frozen | and green."
   },
   {
     displayID: "3",
@@ -39,7 +39,7 @@ exp.practice = [
     ExpFiller: "prac",
     correctAns: "AOI2",
     list: "practice",
-    instruction1: "The water | in the flask | is about 60 degree| and purple."
+    instruction1: "The water | in the flask | is about 60 °C| and purple."
   },
   {
     displayID: "4",
@@ -53,7 +53,7 @@ exp.practice = [
     ExpFiller: "prac",
     correctAns: "AOI4",
     list: "practice",
-    instruction1: "The water | in the beaker | is about 10 degree| and orange."
+    instruction1: "The water | in the beaker | is about 10 °C| and orange."
   }
 ];
 
@@ -246,11 +246,11 @@ exp.stims = [
     location4: "flask-cold-orange",
     target: "AOI2",
     competitor: "AOI1",
-    condition: "freezing",
+    condition: "frozen",
     ExpFiller: "exp",
     correctAns: "AOI2",
     list: "2",
-    instruction3: "The water | in the beaker | is freezing | and orange.",
+    instruction3: "The water | in the beaker | is frozen | and orange.",
     trial_in_list: "13"
   },
   {
@@ -261,11 +261,11 @@ exp.stims = [
     location4: "flask-cool-green",
     target: "AOI3",
     competitor: "AOI4",
-    condition: "freezing",
+    condition: "frozen",
     ExpFiller: "exp",
     correctAns: "AOI3",
     list: "2",
-    instruction3: "The water | in the flask | is freezing | and orange.",
+    instruction3: "The water | in the flask | is frozen | and orange.",
     trial_in_list: "14"
   },
   {
@@ -276,11 +276,11 @@ exp.stims = [
     location4: "flask-cool-green",
     target: "AOI1",
     competitor: "AOI2",
-    condition: "freezing",
+    condition: "frozen",
     ExpFiller: "exp",
     correctAns: "AOI1",
     list: "2",
-    instruction3: "The water | in the beaker | is freezing | and green.",
+    instruction3: "The water | in the beaker | is frozen | and green.",
     trial_in_list: "15"
   },
   {
@@ -291,11 +291,11 @@ exp.stims = [
     location4: "beaker-cool-purple",
     target: "AOI1",
     competitor: "AOI2",
-    condition: "freezing",
+    condition: "frozen",
     ExpFiller: "exp",
     correctAns: "AOI1",
     list: "2",
-    instruction3: "The water | in the flask | is freezing | and purple.",
+    instruction3: "The water | in the flask | is frozen | and purple.",
     trial_in_list: "16"
   },
   {
@@ -310,7 +310,7 @@ exp.stims = [
     ExpFiller: "number",
     correctAns: "AOI2",
     list: "2",
-    instruction3: "The water | in the beaker | is about 0 degree| and green.",
+    instruction3: "The water | in the beaker | is below 0 °C| and green.",
     trial_in_list: "17"
   },
   {
@@ -325,7 +325,7 @@ exp.stims = [
     ExpFiller: "number",
     correctAns: "AOI2",
     list: "2",
-    instruction3: "The water | in the flask | is about 0 degree| and purple.",
+    instruction3: "The water | in the flask | is below 0 °C| and purple.",
     trial_in_list: "18"
   },
   {
@@ -340,7 +340,7 @@ exp.stims = [
     ExpFiller: "number",
     correctAns: "AOI3",
     list: "2",
-    instruction3: "The water | in the beaker | is about 10 degree| and orange.",
+    instruction3: "The water | in the beaker | is about 10 °C| and orange.",
     trial_in_list: "19"
   },
   {
@@ -355,7 +355,7 @@ exp.stims = [
     ExpFiller: "number",
     correctAns: "AOI3",
     list: "2",
-    instruction3: "The water | in the flask | is about 10 degree| and green.",
+    instruction3: "The water | in the flask | is about 10 °C| and green.",
     trial_in_list: "20"
   },
   {
@@ -370,7 +370,7 @@ exp.stims = [
     ExpFiller: "number",
     correctAns: "AOI3",
     list: "2",
-    instruction3: "The water | in the beaker | is about 60 degree| and orange.",
+    instruction3: "The water | in the beaker | is about 60 °C| and orange.",
     trial_in_list: "21"
   },
   {
@@ -385,7 +385,7 @@ exp.stims = [
     ExpFiller: "number",
     correctAns: "AOI4",
     list: "2",
-    instruction3: "The water | in the flask | is about 60 degree| and purple.",
+    instruction3: "The water | in the flask | is about 60 °C| and purple.",
     trial_in_list: "22"
   },
   {
@@ -400,7 +400,7 @@ exp.stims = [
     ExpFiller: "number",
     correctAns: "AOI3",
     list: "2",
-    instruction3: "The water | in the beaker | is about 100 degree| and green.",
+    instruction3: "The water | in the beaker | is above 100 °C| and green.",
     trial_in_list: "23"
   },
   {
@@ -415,7 +415,7 @@ exp.stims = [
     ExpFiller: "number",
     correctAns: "AOI1",
     list: "2",
-    instruction3: "The water | in the flask | is about 100 degree| and purple.",
+    instruction3: "The water | in the flask | is above 100 °C| and purple.",
     trial_in_list: "24"
   },
   {
@@ -430,7 +430,7 @@ exp.stims = [
     ExpFiller: "typeB",
     correctAns: "AOI3",
     list: "2",
-    instruction3: "The water | in the beaker | is about 0 degree| and orange.",
+    instruction3: "The water | in the beaker | is below 0 °C| and orange.",
     trial_in_list: "25"
   },
   {
@@ -445,7 +445,7 @@ exp.stims = [
     ExpFiller: "typeB",
     correctAns: "AOI2",
     list: "2",
-    instruction3: "The water | in the flask | is about 0 degree| and purple.",
+    instruction3: "The water | in the flask | is below 0 °C| and purple.",
     trial_in_list: "26"
   },
   {
@@ -460,7 +460,7 @@ exp.stims = [
     ExpFiller: "typeB",
     correctAns: "AOI4",
     list: "2",
-    instruction3: "The water | in the beaker | is about 10 degree| and green.",
+    instruction3: "The water | in the beaker | is about 10 °C| and green.",
     trial_in_list: "27"
   },
   {
@@ -475,7 +475,7 @@ exp.stims = [
     ExpFiller: "typeB",
     correctAns: "AOI3",
     list: "2",
-    instruction3: "The water | in the flask | is about 10 degree| and orange.",
+    instruction3: "The water | in the flask | is about 10 °C| and orange.",
     trial_in_list: "28"
   },
   {
@@ -490,7 +490,7 @@ exp.stims = [
     ExpFiller: "typeB",
     correctAns: "AOI1",
     list: "2",
-    instruction3: "The water | in the beaker | is about 60 degree| and purple.",
+    instruction3: "The water | in the beaker | is about 60 °C| and purple.",
     trial_in_list: "29"
   },
   {
@@ -505,7 +505,7 @@ exp.stims = [
     ExpFiller: "typeB",
     correctAns: "AOI2",
     list: "2",
-    instruction3: "The water | in the flask | is about 60 degree| and green.",
+    instruction3: "The water | in the flask | is about 60 °C| and green.",
     trial_in_list: "30"
   },
   {
@@ -520,7 +520,7 @@ exp.stims = [
     ExpFiller: "typeB",
     correctAns: "AOI2",
     list: "2",
-    instruction3: "The water | in the beaker | is about 100 degree| and orange.",
+    instruction3: "The water | in the beaker | is above 100 °C| and orange.",
     trial_in_list: "31"
   },
   {
@@ -535,7 +535,7 @@ exp.stims = [
     ExpFiller: "typeB",
     correctAns: "AOI1",
     list: "2",
-    instruction3: "The water | in the flask | is about 100 degree| and purple.",
+    instruction3: "The water | in the flask | is above 100 °C| and purple.",
     trial_in_list: "32"
   }
 ];

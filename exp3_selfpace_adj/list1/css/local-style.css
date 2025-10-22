@@ -6,9 +6,20 @@
 .consent{
 	text-align: left;
 }
+.grid-container {
+  display: grid;
+  grid-template-columns: max-content 250px max-content;
+  grid-template-rows: max-content 100px max-content;  /* slightly larger center gap */
+  width: max-content;
+  margin: 0 auto;
+  grid-gap: 10px;
+  align-items: center;
+  justify-items: center;
+}
+
 .grid-container img {
   max-width: none;
-  height: 200px;
+  height: 280px;   /* increase from 200px */
   width: auto;
 }
 
