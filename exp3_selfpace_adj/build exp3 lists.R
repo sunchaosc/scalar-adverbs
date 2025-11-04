@@ -1,5 +1,5 @@
 # ==========================================================
-# Follow-up list generator (spec v9)
+# Follow-up list generator (spec v10, per-adj corner balancing)
 # Each list: 16 EXP + 8 NUMBER + 8 TYPE-B = 32 trials
 # Displays: EXP+NUMBER use exactly 12 unique displays (IDs 1..12), each used twice
 #           TYPE-B uses exactly 8 displays (IDs 13..20)
@@ -15,7 +15,8 @@
 #   - Each of the 12 (IDs 1..12) used exactly twice (beaker target + flask target)
 #   - TYPE-B IDs 13..20; per list color usage is a (3,3,2) split, rotated across lists
 #   - TYPE-B per degree: 2 trials; colors differ
-#   - Target positions across all 32 trials: LT/RT/LB/RB = 8 each
+#   - Target positions now balanced WITHIN EACH adj/degree: TL/TR/LB/RB = 1 each
+#     (which implies overall positions across all 32 trials are still 8 each)
 #   - No color_pair column
 # Pipes exact in sentences/instructions.
 # ==========================================================
@@ -24,10 +25,9 @@ suppressPackageStartupMessages({ library(dplyr); library(stringr) })
 set.seed(20251017)
 
 # ---------- vocab ----------
-# ---------- vocab ----------
 color_word <- c(o="orange", g="green", p="purple")
 temp2adj <- c(warm="warm", hot="boiling", cool="cool", cold="frozen")  # <- was "freezing"
-adj2deg  <- c(warm=60, boiling=100, cool=10, frozen=0)              # unchanged (internal)
+adj2deg  <- c(warm=60, boiling=100, cool=10, frozen=0)                 # unchanged (internal)
 deg2ft   <- c(`0`="cold", `10`="cool", `60`="warm", `100`="hot")
 
 img_name <- function(obj, ft, c) paste0(obj,"-",ft,"-",color_word[[c]],".png")
@@ -46,17 +46,31 @@ place_images <- function(target_img, competitor_img, horiz_img, other_img, targe
   out[setdiff(all, names(out[!is.na(out)]))] <- other_img
   out
 }
-assign_balanced_positions_32 <- function(df) {
-  stopifnot(nrow(df)==32)
-  pos <- rep(c("LT","RT","LB","RB"), each=8)
-  pos <- sample(pos)
-  for (i in seq_len(nrow(df))) {
-    lay <- place_images(df$target_image[i], df$competitor_image[i],
-                        df$other1_image[i], df$other2_image[i], pos[i])
-    df$LT[i] <- lay["LT"]; df$RT[i] <- lay["RT"]; df$LB[i] <- lay["LB"]; df$RB[i] <- lay["RB"]
+
+# New: per-adj/degree corner balancer (ensures 1× TL/TR/LB/RB per level)
+assign_balanced_positions_by_adj <- function(df) {
+  # Prepare columns
+  df$LT <- df$RT <- df$LB <- df$RB <- NA_character_
+  
+  # For each level of df$adj, assign one of each corner (possibly repeated cycles if >4)
+  levels_adj <- unique(df$adj)
+  for (a in levels_adj) {
+    idx <- which(df$adj == a)
+    n <- length(idx)
+    stopifnot(n %% 4 == 0)  # we need multiples of 4 to get perfect 1× per corner
+    # Make a balanced vector of positions and shuffle
+    base <- rep(c("LT","RT","LB","RB"), times = n/4)
+    pos  <- sample(base, size = n, replace = FALSE)
+    for (j in seq_along(idx)) {
+      i <- idx[j]
+      lay <- place_images(df$target_image[i], df$competitor_image[i],
+                          df$other1_image[i], df$other2_image[i], pos[j])
+      df$LT[i] <- lay["LT"]; df$RT[i] <- lay["RT"]; df$LB[i] <- lay["LB"]; df$RB[i] <- lay["RB"]
+    }
   }
   df
 }
+
 add_target_comp_loc <- function(df) {
   find_loc <- function(row_imgs, img) {
     if (is.na(img)) return(NA_character_)
@@ -94,9 +108,8 @@ sent_num <- function(obj, deg, col) {
   } else {
     paste0("about ", deg, " \u00B0C")
   }
-  paste0("The water | in the ", obj, " | is ", val, "| and ", color_word[[col]], ".")
+  paste0("The water | in the ", obj, " | is ", val, " | and ", color_word[[col]], ".")
 }
-
 
 # ---------- display registry (global IDs) ----------
 .make_sig <- function(imgs4) paste(sort(imgs4), collapse=" | ")
@@ -150,49 +163,39 @@ exp_color_plan <- list(
 
 build_12_displays <- function() {
   out <- list(); id <- 1L
-  
   # 8 EXP displays (2 per adjective): SAME then FLIP
   for (adj in c("warm","boiling","cool","freezing")) {
     m <- exp_map[[adj]]; pl <- exp_color_plan[[adj]]
-    
     # SAME display for adj (X repeated across objects)
     same_pair <- paste0(pl$X, "-", setdiff(c("o","g","p"), pl$X)[1])
     imgsS <- build_sameflip_display(same_pair, m$tar, m$comp, flip=FALSE)
     register_display(imgsS, force_id = id); out[[length(out)+1]] <- list(id=id, kind="EXP", adj=adj, flip=FALSE, imgs=imgsS); id <- id+1L
-    
     # FLIP display for adj (two other colors)
     imgsF <- build_sameflip_display(pl$flip_pair, m$tar, m$comp, flip=TRUE)
     register_display(imgsF, force_id = id); out[[length(out)+1]] <- list(id=id, kind="EXP", adj=adj, flip=TRUE, imgs=imgsF); id <- id+1L
   }
-  
-  # 4 NUMBER displays (1 per degree) — we store one base FLIP-friendly display per degree
-  # We will derive SAME and FLIP trials from these *same* displays (beaker & flask targets) so each display is used twice.
+  # 4 NUMBER displays (1 per degree)
   num_pairs <- c(`0`="g-p", `10`="o-g", `60`="o-p", `100`="g-p")
   for (deg in c(0,10,60,100)) {
     m <- num_map[[as.character(deg)]]
     base_pair <- num_pairs[[as.character(deg)]]
-    # Build a FLIP-style layout so that beaker=first color, flask=second color at target temp.
     imgs <- build_sameflip_display(base_pair, m$tar, m$comp, flip=TRUE)
     register_display(imgs, force_id = id); out[[length(out)+1]] <- list(id=id, kind="NUMBER", degree=deg, imgs=imgs); id <- id+1L
   }
-  
-  stopifnot(id==13L) # ensured 1..12 used
+  stopifnot(id==13L)
   out
 }
 
 # Trials from the 12 displays — each used exactly twice (beaker+flask)
 make_expnum_trials_from_12 <- function(list_id, D12) {
   rows <- list(); k <- 1L
-  
-  # EXP: for each adjective we have two displays: SAME (both X) and FLIP (Y,Z)
+  # EXP (2 displays per adjective × 2 targets = 4 trials per adjective)
   for (adj in c("warm","boiling","cool","freezing")) {
     spec <- exp_map[[adj]]
     d_same <- D12[[ which(sapply(D12, function(x) x$kind=="EXP" && x$adj==adj && !x$flip)) ]]
     d_flip <- D12[[ which(sapply(D12, function(x) x$kind=="EXP" && x$adj==adj &&  x$flip)) ]]
-    
     for (d in list(d_same, d_flip)) {
       imgs <- d$imgs; disp_id <- d$id
-      # Two trials: beaker target & flask target (so display used exactly twice)
       for (obj in c("beaker","flask")) {
         if (obj=="beaker") {
           tgti <- if (grepl(paste0("-",spec$tar,"-"), imgs["b1"])) imgs["b1"] else imgs["b2"]
@@ -203,8 +206,8 @@ make_expnum_trials_from_12 <- function(list_id, D12) {
         }
         tgt <- parse_img(tgti); col <- clr_letter(tgt$color_word)
         s <- sent_exp(obj, temp2adj[[tgt$ft]], col)
+        # temporary layout, will be overridden by per-adj balancer
         lay <- place_images(tgti, cmpi, horiz, other, target_pos="LT")
-        
         rows[[k]] <- data.frame(
           list_id=list_id, list_name=paste0("List",list_id),
           condition="exp", display_id=disp_id, target_object=obj,
@@ -217,14 +220,13 @@ make_expnum_trials_from_12 <- function(list_id, D12) {
       }
     }
   }
-  
-  # NUMBER: for each degree we have one display; again, two trials per display (beaker as SAME-color target, flask as FLIP-color target)
+  # NUMBER (1 display per degree × 2 targets = 2 trials per degree)
   for (deg in c(0,10,60,100)) {
     dN <- D12[[ which(sapply(D12, function(x) x$kind=="NUMBER" && x$degree==deg)) ]]
     spec <- num_map[[as.character(deg)]]
     imgs <- dN$imgs; disp_id <- dN$id
     
-    # Trial 1 (beaker target): target color == first color of the stored pair
+    # beaker target
     tgti <- if (grepl(paste0("-",spec$tar,"-"), imgs["b1"])) imgs["b1"] else imgs["b2"]
     cmpi <- if (tgti==imgs["b1"]) imgs["b2"] else imgs["b1"]; horiz <- imgs["f1"]; other <- imgs["f2"]
     tgt <- parse_img(tgti); col <- clr_letter(tgt$color_word)
@@ -240,8 +242,8 @@ make_expnum_trials_from_12 <- function(list_id, D12) {
       sentence=s, instruction=s, stringsAsFactors=FALSE
     ); k <- k+1L
     
-    # Trial 2 (flask target): target color == second color of the stored pair (different color)
-    tgti <- if (grepl(paste0("-",spec$tar,"-"), imgs["f2"])) imgs["f2"] else imgs["f1"]  # f2 carries second color at target temp in FLIP layout
+    # flask target
+    tgti <- if (grepl(paste0("-",spec$tar,"-"), imgs["f2"])) imgs["f2"] else imgs["f1"]
     cmpi <- if (tgti==imgs["f2"]) imgs["f1"] else imgs["f2"]; horiz <- imgs["b1"]; other <- imgs["b2"]
     tgt <- parse_img(tgti); col <- clr_letter(tgt$color_word)
     s <- sent_num("flask", deg, col)
@@ -259,7 +261,7 @@ make_expnum_trials_from_12 <- function(list_id, D12) {
   
   df <- bind_rows(rows)
   
-  # Sanity checks: 12 distinct display_id used, each exactly twice
+  # Sanity: 12 distinct display_id used, each exactly twice
   stopifnot(length(unique(df$display_id))==12)
   cts <- table(df$display_id); stopifnot(all(cts==2))
   
@@ -276,11 +278,6 @@ make_expnum_trials_from_12 <- function(list_id, D12) {
 # ==========================================================
 
 build_typeB_designs <- function() {
-  # For each degree we make exactly TWO displays:
-  #   - Display A: beaker at BASE temp (deg2ft), flask at PARTNER temp
-  #   - Display B: beaker at PARTNER temp, flask at BASE temp
-  #
-  # This lets us always pick the target from the side that matches the degree.
   plan <- list(
     `0`   = c("o-g","o-p"),
     `10`  = c("g-p","o-g"),
@@ -292,7 +289,7 @@ build_typeB_designs <- function() {
     base <- deg2ft[[as.character(deg)]]
     partner <- if (base %in% c("warm","hot")) if (base=="warm") "hot" else "warm"
     else if (base=="cool") "cold" else "cool"
-    pairs <- plan[[as.character(deg)]]  # length 2
+    pairs <- plan[[as.character(deg)]]
     
     # A: base on BEAKER side
     imgsA <- build_typeB_display(pairs[[1]], beaker_ft = base,   flask_ft = partner)
@@ -312,22 +309,20 @@ build_typeB_designs <- function() {
   out
 }
 
-
 # Desired per-list Type-B color totals (target color counts) as (3,3,2) rotated
 tb_color_quota <- function(list_id) {
   switch(as.character(list_id),
-         "1" = c(o=2, g=3, p=3),  # example: (2 O, 3 G, 3 P)
-         "2" = c(o=3, g=2, p=3),  # (3 O, 2 G, 3 P)
-         "3" = c(o=3, g=3, p=2),  # (3 O, 3 G, 2 P)
-         c(o=2, g=3, p=3)   # repeat first pattern
-  )
+         "1" = c(o=2, g=3, p=3),
+         "2" = c(o=3, g=2, p=3),
+         "3" = c(o=3, g=3, p=2),
+         c(o=2, g=3, p=3))
 }
 
 # Build Type-B trials per list satisfying:
 #  - two trials per degree (different colors)
 #  - overall 8 trials hit the requested (3,3,2) target by choosing target object per display
 make_typeB_trials <- function(list_id, designs) {
-  quota <- tb_color_quota(list_id)  # desired per-list (3,3,2)
+  quota <- tb_color_quota(list_id)
   left  <- quota
   rows <- list(); k <- 1L
   
@@ -336,21 +331,17 @@ make_typeB_trials <- function(list_id, designs) {
     ds <- by_deg[[deg]]; stopifnot(length(ds) == 2)
     base_ft <- deg2ft[[deg]]
     
-    # ---- Pick colors for the two displays (must differ)
-    # For Display A (whatever its pair), choose the color with larger remaining quota.
     pick_color_from_pair <- function(pair, avoid = NULL) {
       opts <- strsplit(pair, "-", TRUE)[[1]]
       if (!is.null(avoid)) opts <- setdiff(opts, avoid)
-      if (!length(opts)) opts <- strsplit(pair, "-", TRUE)[[1]]  # fallback
+      if (!length(opts)) opts <- strsplit(pair, "-", TRUE)[[1]]
       sc <- left[opts]; sc[is.na(sc)] <- -Inf
       opts[which.max(sc)]
     }
     
-    # For each display, target must be the object whose temp == BASE
     build_trial_from_display <- function(D, chosen_col) {
       imgs <- D$imgs
       if (D$base_on == "beaker") {
-        # base temp lives on beaker side -> target beaker at chosen color
         pair <- strsplit(D$pair, "-", TRUE)[[1]]
         if (chosen_col == pair[1]) {
           tgti <- imgs["b1"]; cmpi <- imgs["b2"]; horiz <- imgs["f1"]; other <- imgs["f2"]; obj <- "beaker"
@@ -358,7 +349,6 @@ make_typeB_trials <- function(list_id, designs) {
           tgti <- imgs["b2"]; cmpi <- imgs["b1"]; horiz <- imgs["f2"]; other <- imgs["f1"]; obj <- "beaker"
         }
       } else {
-        # base temp lives on flask side -> target flask at chosen color
         pair <- strsplit(D$pair, "-", TRUE)[[1]]
         if (chosen_col == pair[1]) {
           tgti <- imgs["f1"]; cmpi <- imgs["f2"]; horiz <- imgs["b1"]; other <- imgs["b2"]; obj <- "flask"
@@ -366,10 +356,10 @@ make_typeB_trials <- function(list_id, designs) {
           tgti <- imgs["f2"]; cmpi <- imgs["f1"]; horiz <- imgs["b2"]; other <- imgs["b1"]; obj <- "flask"
         }
       }
-      tgt <- parse_img(tgti); stopifnot(tgt$ft == base_ft)  # ensure degree→target-temp
+      tgt <- parse_img(tgti); stopifnot(tgt$ft == base_ft)
       col <- clr_letter(tgt$color_word)
       s <- sent_num(obj, as.integer(deg), col)
-      lay <- place_images(tgti, cmpi, horiz, other, target_pos = "LT")
+      lay <- place_images(tgti, cmpi, horiz, other, target_pos = "LT")  # temp
       data.frame(
         list_id = list_id, list_name = paste0("List", list_id),
         condition = "typeB", display_id = D$id, target_object = obj,
@@ -382,7 +372,6 @@ make_typeB_trials <- function(list_id, designs) {
       )
     }
     
-    # Choose colors: different within the degree, respect quota greedily
     colA <- pick_color_from_pair(ds[[1]]$pair, avoid = NULL)
     trialA <- build_trial_from_display(ds[[1]], colA); left[colA] <- left[colA] - 1L
     
@@ -394,26 +383,38 @@ make_typeB_trials <- function(list_id, designs) {
   }
   
   used <- quota - left
-  stopifnot(all(used >= 2), sum(used) == 8)  # 8 typeB targets per list, (3,3,2) split
+  stopifnot(all(used >= 2), sum(used) == 8)
   dplyr::bind_rows(rows)
 }
 
-
+# ---------- sanity helpers ----------
+assert_per_adj_corners <- function(df) {
+  # For each adj level, we expect exactly 4 trials and 1 in each corner
+  byA <- split(df, df$adj)
+  for (nm in names(byA)) {
+    sub <- byA[[nm]]
+    stopifnot(nrow(sub) %% 4 == 0)
+    tab <- table(sub$target_loc)
+    # accept names order variations
+    needed <- c("LT","RT","LB","RB")
+    if (!all(needed %in% names(tab))) stop(paste("Missing corners in adj:", nm))
+    stopifnot(all(as.integer(tab[needed]) == nrow(sub)/4))
+  }
+  invisible(TRUE)
+}
 
 # ==========================================================
 # Build one list
 # ==========================================================
 build_one_list <- function(list_id, D12, tb_designs) {
   expnum <- make_expnum_trials_from_12(list_id, D12)
-  # EXP+NUMBER totals are already asserted 8/8/8.
-  
   tb <- make_typeB_trials(list_id, tb_designs)
   
   df <- bind_rows(expnum, tb) %>%
     arrange(factor(condition, levels=c("exp","number","typeB")), display_id, target_object)
   
-  # Final corner balancing across all 32 trials (8 per corner)
-  df <- assign_balanced_positions_32(df) %>%
+  # New: per-adj/degree corner balancing (1× each corner within each level of adj)
+  df <- assign_balanced_positions_by_adj(df) %>%
     add_target_comp_loc() %>%
     mutate(item_id = paste0(display_id, "_", target_object),
            trial_in_list = row_number())
@@ -421,13 +422,17 @@ build_one_list <- function(list_id, D12, tb_designs) {
   # No color_pair in outputs
   if ("color_pair" %in% names(df)) df$color_pair <- NULL
   
-  # Final per-list sanity checks
-  # (1) 12 EXP/NUMBER display IDs, each used exactly twice:
+  # Final sanity checks
   en <- df %>% filter(condition %in% c("exp","number"))
   stopifnot(length(unique(en$display_id))==12)
   stopifnot(all(table(en$display_id)==2))
-  # (2) positions 8 each:
-  stopifnot(all(table(df$target_loc) == c(LB=8, LT=8, RB=8, RT=8)))
+  
+  # Check per-adj/degree corners exactly balanced
+  assert_per_adj_corners(df)
+  
+  # Also implies overall positions 8 each across 32 trials:
+  pos_tab <- table(df$target_loc)
+  stopifnot(all(pos_tab[c("LT","RT","LB","RB")] == 8))
   
   df
 }
@@ -435,11 +440,11 @@ build_one_list <- function(list_id, D12, tb_designs) {
 # ==========================================================
 # Build all lists & write
 # ==========================================================
-build_all_lists <- function(out_dir="lists_followup_spec_v9") {
+build_all_lists <- function(out_dir="lists_followup_spec_v10_per_adj_corners") {
   dir.create(out_dir, recursive=TRUE, showWarnings=FALSE)
   
-  D12 <- build_12_displays()        # fixed 12 displays (IDs 1..12)
-  tb_designs <- build_typeB_designs() # fixed 8 displays (IDs 13..20)
+  D12 <- build_12_displays()         # fixed 12 displays (IDs 1..12)
+  tb_designs <- build_typeB_designs()# fixed 8 displays (IDs 13..20)
   
   lists <- lapply(1:4, function(L) build_one_list(L, D12, tb_designs))
   names(lists) <- paste0("List",1:4)
@@ -449,13 +454,11 @@ build_all_lists <- function(out_dir="lists_followup_spec_v9") {
   for (nm in names(lists)) {
     readr::write_excel_csv(lists[[nm]], file.path(out_dir, paste0(nm, ".csv")))
   }
-  
-  combined <- dplyr::bind_rows(lists, .id = "which_list")     # <-- add this
+  combined <- dplyr::bind_rows(lists, .id = "which_list")
   readr::write_excel_csv(combined, file.path(out_dir, "ALL_lists.csv"))
   
   invisible(lists)
 }
 
-
 lists_out <- build_all_lists()
-cat("Done. EXP+NUMBER use displays 1..12 exactly twice; TYPE-B uses 13..20 with (3,3,2) color splits; corners 8 each.\n")
+cat("Done. Per-adj/degree corners balanced (1× each), EXP+NUMBER color 8/8/8, displays 1..12 used exactly twice, TYPE-B 13..20 with (3,3,2) splits. Overall corners 8 each.\n")
