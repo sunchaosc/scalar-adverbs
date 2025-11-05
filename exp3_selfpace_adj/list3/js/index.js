@@ -1,8 +1,110 @@
 /* index.js — drop-in build
    - Practice: pure shuffle
-   - Main trials: pure shuffle (same rule as practice)
+   - Main trials: shuffle with constraint:
+       * Do NOT allow more than TWO in a row with the same ExpFiller
+         (ExpFiller ∈ {"exp","number","typeB"})
    - Keeps your slide flow and logging (presentation_index, randomized_order)
 */
+
+// ===== Helpers: shuffle with "max run length" constraint by key =====
+
+// Fisher–Yates
+function fyShuffle(a) {
+  const arr = a.slice();
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function hasRunViolation(arr, keyFn, maxRun) {
+  let lastKey = null, run = 0;
+  for (const x of arr) {
+    const k = keyFn(x);
+    if (k === lastKey) {
+      run += 1;
+      if (run > maxRun) return true;
+    } else {
+      lastKey = k;
+      run = 1;
+    }
+  }
+  return false;
+}
+
+// Greedy randomized constructor with restarts
+function shuffleWithMaxRun(items, keyFn, maxRun = 2, maxRestarts = 200) {
+  const N = items.length;
+  for (let attempt = 0; attempt < maxRestarts; attempt++) {
+    // group by key
+    const byKey = {};
+    for (const it of items) {
+      const k = keyFn(it);
+      (byKey[k] ||= []).push(it);
+    }
+    // randomize order within each group
+    for (const k in byKey) byKey[k] = fyShuffle(byKey[k]);
+
+    const keys = Object.keys(byKey);
+    let seq = [];
+    let lastKey = null, run = 0;
+
+    // counts
+    const remaining = {};
+    keys.forEach(k => remaining[k] = byKey[k].length);
+
+    for (let pos = 0; pos < N; pos++) {
+      // candidates that won't break the run cap and still have items
+      const candidates = keys.filter(k =>
+        remaining[k] > 0 && (k !== lastKey || run < maxRun)
+      );
+
+      if (candidates.length === 0) {
+        seq = null; // dead end → restart
+        break;
+      }
+
+      // prefer keys with more remaining items to avoid dead-ends, but keep randomness
+      const weighted = [];
+      for (const k of candidates) {
+        const w = remaining[k] + Math.random();
+        weighted.push({ k, w });
+      }
+      weighted.sort((a,b) => b.w - a.w);
+
+      // pick among the top few to keep variety
+      const pickFrom = Math.min(3, weighted.length);
+      const choice = weighted[Math.floor(Math.random() * pickFrom)].k;
+
+      // take item from chosen pool
+      const item = byKey[choice].pop();
+      remaining[choice]--;
+      seq.push(item);
+
+      if (choice === lastKey) {
+        run += 1;
+      } else {
+        lastKey = choice;
+        run = 1;
+      }
+    }
+
+    if (seq && seq.length === N && !hasRunViolation(seq, keyFn, maxRun)) {
+      return seq;
+    }
+    // otherwise retry
+  }
+
+  // Fallback: rejection sampling
+  for (let i = 0; i < 2000; i++) {
+    const s = fyShuffle(items);
+    if (!hasRunViolation(s, keyFn, maxRun)) return s;
+  }
+
+  console.warn("[shuffleWithMaxRun] Could not satisfy constraint, returning plain shuffle.");
+  return fyShuffle(items);
+}
 
 // ====== Slides ======
 function make_slides(f) {
@@ -258,8 +360,9 @@ function init() {
   // Practice: pure uniform shuffle
   exp.practice_shuffled = _.shuffle(exp.practice);
 
-  // Main trials: pure uniform shuffle (same as practice)
-  exp.stims_shuffled = _.shuffle(exp.stims);
+  // Main trials: constrain so NO MORE THAN 2 of the same ExpFiller in a row
+  // ExpFiller ∈ {"exp","number","typeB"}
+  exp.stims_shuffled = shuffleWithMaxRun(exp.stims, s => s.ExpFiller, 2);
 
   // Store full order for record (by displayID if available)
   exp.randomized_order = exp.stims_shuffled.map(s => s.displayID || s.item_id || "NA");
